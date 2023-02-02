@@ -2,8 +2,7 @@
   "name": "requestvideo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "type": "module",
+  "main": "index.mjs",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
