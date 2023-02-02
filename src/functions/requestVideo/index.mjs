@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { nanoid } from 'nanoid'
 
 export const handler = async (event) => {
   if (!event.url) {
@@ -12,7 +12,7 @@ export const handler = async (event) => {
     return response
   }
 
-  const jobId = uuidv4()
+  const jobId = nanoid()
 
   // TODO validate url
   // TODO connect to dynamodb

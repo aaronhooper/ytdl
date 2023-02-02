@@ -3,6 +3,6 @@
   "main": "index.mjs",
   "private": true,
   "dependencies": {
-    "uuid": "^9.0.0"
+    "nanoid": "^4.0.0"
   }
 }
