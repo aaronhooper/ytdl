@@ -1,5 +1,7 @@
 import { nanoid } from 'nanoid'
 import { isValidUrl } from './lib/util.mjs'
+import ddbClient from './lib/dynamoDbClient.mjs'
+import { PutItemCommand } from '@aws-sdk/client-dynamodb'
 
 export const handler = async (event) => {
   if (!event.url) {
@@ -27,8 +29,15 @@ export const handler = async (event) => {
     return response
   }
 
-  // TODO connect to dynamodb
-  // TODO insert entry
+  await ddbClient.send(new PutItemCommand({
+    TableName: 'streamJobs',
+    Item: {
+      jobId: { S: jobId },
+      status: { S: 'IN_PROGRESS' },
+      sourceUrl: { S: url }
+    }
+  }))
+
   // TODO invoke siphon lambda
 
   const response = {
