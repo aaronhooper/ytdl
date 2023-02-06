@@ -3,6 +3,11 @@
   "main": "index.mjs",
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.264.0",
+    "find-config": "^1.0.0",
     "nanoid": "^4.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3"
   }
 }
