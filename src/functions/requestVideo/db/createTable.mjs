@@ -1,5 +1,11 @@
+import * as dotenv from 'dotenv'
+import path from 'path'
 import { CreateTableCommand } from '@aws-sdk/client-dynamodb'
 import ddbClient from '../lib/dynamoDbClient.mjs'
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: path.join(__dirname, '../.env') })
+}
 
 const params = {
   AttributeDefinitions: [

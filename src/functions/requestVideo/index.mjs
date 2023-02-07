@@ -1,7 +1,12 @@
+import * as dotenv from 'dotenv'
 import { nanoid } from 'nanoid'
 import { isValidUrl } from './lib/util.mjs'
 import ddbClient from './lib/dynamoDbClient.mjs'
 import { PutItemCommand } from '@aws-sdk/client-dynamodb'
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config()
+}
 
 export const handler = async (event) => {
   if (!event.url) {
