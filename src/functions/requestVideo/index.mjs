@@ -37,7 +37,7 @@ export const handler = async (event) => {
   }
 
   await ddbClient.send(new PutItemCommand({
-    TableName: 'streamJobs',
+    TableName: process.env.TABLENAME,
     Item: {
       jobId: { S: jobId },
       status: { S: 'IN_PROGRESS' },
