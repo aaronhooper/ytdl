@@ -3,6 +3,8 @@ import { nanoid } from 'nanoid'
 import { isValidUrl } from './lib/util.mjs'
 import ddbClient from './lib/dynamoDbClient.mjs'
 import { PutItemCommand } from '@aws-sdk/client-dynamodb'
+import lambdaClient from './lib/lambdaClient.mjs'
+import { InvokeCommand } from '@aws-sdk/client-lambda'
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config()
@@ -43,7 +45,11 @@ export const handler = async (event) => {
     }
   }))
 
-  // TODO invoke siphon lambda
+  await lambdaClient.send(new InvokeCommand({
+    InvocationType: 'Event',
+    FunctionName: process.env.REQUEST_VIDEO_ARN,
+    Payload: JSON.stringify({ url, jobId })
+  }))
 
   const response = {
     statusCode: 202,
