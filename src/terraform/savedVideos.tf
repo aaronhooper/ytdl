@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "savedVideos_bucket" {
-  bucket = "ayayron-ytdl"
+  bucket = var.BUCKET
 }
 
 resource "aws_s3_bucket_acl" "savedVideos_acl" {
