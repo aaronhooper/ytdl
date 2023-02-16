@@ -52,12 +52,12 @@ resource "aws_iam_role_policy_attachment" "attach_requestVideo_policy_to_role" {
 
 data "archive_file" "zip_requestVideo" {
   type = "zip"
-  source_dir = "${path.module}/../requestVideo/"
-  output_path = "${path.module}/../requestVideo.zip"
+  source_dir = "${path.module}/../functions/requestVideo/"
+  output_path = "${path.module}/../functions/requestVideo.zip"
 }
 
 resource "aws_lambda_function" "terraform_requestVideo_func" {
-  filename = "${path.module}/../requestVideo.zip"
+  filename = "${path.module}/../functions/requestVideo.zip"
   function_name = "requestVideo"
   role = aws_iam_role.requestVideo_role.arn
   handler = "index.handler"
