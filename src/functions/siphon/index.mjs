@@ -26,11 +26,14 @@ export const handler = async (event) => {
 
   await ddbClient.send(new UpdateItemCommand({
     TableName: process.env.TABLE_NAME,
-    Key: { jobId },
-    UpdateExpression: 'SET status = :status, downloadLink = :downloadLink',
+    Key: { jobId: { S: jobId } },
+    UpdateExpression: 'SET #status = :status, downloadLink = :downloadLink',
+    ExpressionAttributeNames: {
+      '#status': 'status'
+    },
     ExpressionAttributeValues: {
-      ':status': 'COMPLETED',
-      ':downloadLink': createS3Url(videoFilename)
+      ':status': { S: 'COMPLETED' },
+      ':downloadLink': { S: createS3Url(videoFilename) }
     },
     ReturnValues: 'UPDATED_NEW'
   }))
