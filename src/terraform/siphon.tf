@@ -32,6 +32,7 @@ resource "aws_iam_policy" "siphon_policy" {
         Action = [
           "dynamodb:PutItem",
           "dynamodb:ReadItem",
+          "dynamodb:UpdateItem",
           "dynamodb:DeleteItem"
         ]
         Resource = "arn:aws:dynamodb:*:*:*"
