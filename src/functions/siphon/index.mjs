@@ -12,31 +12,57 @@ export const handler = async (event) => {
   const videoFilename = jobId + '.mp4'
   const passThrough = new PassThrough()
 
-  const upload = new Upload({
-    client: s3Client,
-    params: {
-      Bucket: process.env.BUCKET,
-      Key: videoFilename,
-      Body: passThrough
+  try {
+    const upload = new Upload({
+      client: s3Client,
+      params: {
+        Bucket: process.env.BUCKET,
+        Key: videoFilename,
+        Body: passThrough
+      }
+    })
+
+    ytdl(url, { filter: 'audioandvideo' }).pipe(passThrough)
+    await upload.done()
+  } catch (err) {
+    console.error(err)
+
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Could not stream video data to bucket'
+      })
     }
-  })
 
-  ytdl(url, { filter: 'audioandvideo' }).pipe(passThrough)
-  await upload.done()
+    return response
+  }
 
-  await ddbClient.send(new UpdateItemCommand({
-    TableName: process.env.TABLE_NAME,
-    Key: { jobId: { S: jobId } },
-    UpdateExpression: 'SET #status = :status, downloadLink = :downloadLink',
-    ExpressionAttributeNames: {
-      '#status': 'status'
-    },
-    ExpressionAttributeValues: {
-      ':status': { S: 'COMPLETED' },
-      ':downloadLink': { S: createS3Url(videoFilename) }
-    },
-    ReturnValues: 'UPDATED_NEW'
-  }))
+  try {
+    await ddbClient.send(new UpdateItemCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { jobId: { S: jobId } },
+      UpdateExpression: 'SET #status = :status, downloadLink = :downloadLink',
+      ExpressionAttributeNames: {
+        '#status': 'status'
+      },
+      ExpressionAttributeValues: {
+        ':status': { S: 'COMPLETED' },
+        ':downloadLink': { S: createS3Url(videoFilename) }
+      },
+      ReturnValues: 'UPDATED_NEW'
+    }))
+  } catch (err) {
+    console.error(err)
+
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Could not update item in database'
+      })
+    }
+
+    return response
+  }
 
   const response = {
     statusCode: 200,

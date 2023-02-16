@@ -36,20 +36,46 @@ export const handler = async (event) => {
     return response
   }
 
-  await ddbClient.send(new PutItemCommand({
-    TableName: process.env.TABLE_NAME,
-    Item: {
-      jobId: { S: jobId },
-      status: { S: 'IN_PROGRESS' },
-      sourceUrl: { S: url }
-    }
-  }))
+  try {
+    await ddbClient.send(new PutItemCommand({
+      TableName: process.env.TABLE_NAME,
+      Item: {
+        jobId: { S: jobId },
+        status: { S: 'IN_PROGRESS' },
+        sourceUrl: { S: url }
+      }
+    }))
+  } catch (err) {
+    console.error(err)
 
-  await lambdaClient.send(new InvokeCommand({
-    InvocationType: 'Event',
-    FunctionName: process.env.FUNCTION_ARN,
-    Payload: JSON.stringify({ url, jobId })
-  }))
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Could not create item in database'
+      })
+    }
+
+    return response
+  }
+
+  try {
+    await lambdaClient.send(new InvokeCommand({
+      InvocationType: 'Event',
+      FunctionName: process.env.FUNCTION_ARN,
+      Payload: JSON.stringify({ url, jobId })
+    }))
+  } catch (err) {
+    console.error(err)
+
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Could not invoke siphon'
+      })
+    }
+
+    return response
+  }
 
   const response = {
     statusCode: 202,
