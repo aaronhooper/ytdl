@@ -34,10 +34,15 @@ resource "aws_iam_policy" "siphon_policy" {
           "dynamodb:ReadItem",
           "dynamodb:DeleteItem"
         ]
-        Resource = [
-          "arn:aws:dynamodb:*:*:*",
-          "arn:aws:s3:*:*:*"
+        Resource = "arn:aws:dynamodb:*:*:*"
+        Effect = "Allow"
+      },
+      {
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectAcl"
         ]
+        Resource = "arn:aws:s3:::*/*"
         Effect = "Allow"
       }
     ]
