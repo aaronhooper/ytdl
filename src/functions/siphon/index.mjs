@@ -4,13 +4,15 @@ import { UpdateItemCommand } from '@aws-sdk/client-dynamodb'
 import ytdl from 'ytdl-core'
 import s3Client from './lib/s3Client.mjs'
 import ddbClient from './lib/dynamoDbClient.mjs'
-import createS3Url from './util/createS3Url.mjs'
+import { GetObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 export const handler = async (event) => {
   const url = event.url
   const jobId = event.jobId
   const videoFilename = jobId + '.mp4'
   const passThrough = new PassThrough()
+  let signedUrl = ''
 
   try {
     const upload = new Upload({
@@ -38,6 +40,28 @@ export const handler = async (event) => {
   }
 
   try {
+    const getVideoCommand = new GetObjectCommand({
+      Bucket: process.env.BUCKET,
+      Key: videoFilename
+    })
+
+    signedUrl = await getSignedUrl(s3Client, getVideoCommand, {
+      expiresIn: 3600
+    })
+  } catch (err) {
+    console.error(err)
+
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Could not create presigned url'
+      })
+    }
+
+    return response
+  }
+
+  try {
     await ddbClient.send(new UpdateItemCommand({
       TableName: process.env.TABLE_NAME,
       Key: { jobId: { S: jobId } },
@@ -47,7 +71,7 @@ export const handler = async (event) => {
       },
       ExpressionAttributeValues: {
         ':status': { S: 'COMPLETED' },
-        ':downloadLink': { S: createS3Url(videoFilename) }
+        ':downloadLink': { S: signedUrl }
       },
       ReturnValues: 'UPDATED_NEW'
     }))
