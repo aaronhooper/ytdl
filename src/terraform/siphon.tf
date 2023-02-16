@@ -41,7 +41,8 @@ resource "aws_iam_policy" "siphon_policy" {
       {
         Action = [
           "s3:PutObject",
-          "s3:PutObjectAcl"
+          "s3:PutObjectAcl",
+          "s3:GetObject"
         ]
         Resource = "arn:aws:s3:::*/*"
         Effect = "Allow"
