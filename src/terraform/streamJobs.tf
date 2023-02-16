@@ -3,6 +3,7 @@ resource "aws_dynamodb_table" "streamJobs_table" {
   hash_key = "jobId"
   name = var.TABLE_NAME
   stream_enabled = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
 
   attribute {
     name = "jobId"
