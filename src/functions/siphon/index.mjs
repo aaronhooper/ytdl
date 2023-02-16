@@ -25,7 +25,7 @@ export const handler = async (event) => {
   await upload.done()
 
   await ddbClient.send(new UpdateItemCommand({
-    TableName: process.env.TABLENAME,
+    TableName: process.env.TABLE_NAME,
     Key: { jobId },
     UpdateExpression: 'SET status = :status, downloadLink = :downloadLink',
     ExpressionAttributeValues: {

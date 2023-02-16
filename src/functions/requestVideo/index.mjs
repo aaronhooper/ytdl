@@ -37,7 +37,7 @@ export const handler = async (event) => {
   }
 
   await ddbClient.send(new PutItemCommand({
-    TableName: process.env.TABLENAME,
+    TableName: process.env.TABLE_NAME,
     Item: {
       jobId: { S: jobId },
       status: { S: 'IN_PROGRESS' },
@@ -47,7 +47,7 @@ export const handler = async (event) => {
 
   await lambdaClient.send(new InvokeCommand({
     InvocationType: 'Event',
-    FunctionName: process.env.REQUEST_VIDEO_ARN,
+    FunctionName: process.env.FUNCTION_ARN,
     Payload: JSON.stringify({ url, jobId })
   }))
 

@@ -6,12 +6,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const s3Client = new S3Client({
-  region: process.env.REGION,
-  endpoint: process.env.DDB_ENDPOINT,
-  credentials: {
-    accessKeyId: process.env.ACCESS_KEY,
-    secretAccessKey: process.env.SECRET_KEY
-  }
+  region: process.env.REGION
 })
 
 export default s3Client

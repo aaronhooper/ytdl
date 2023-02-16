@@ -1,3 +1,7 @@
+variable "REGION" {}
+variable "BUCKET" {}
+variable "TABLE_NAME" {}
+
 terraform {
   required_providers {
     aws = {

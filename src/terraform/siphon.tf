@@ -62,5 +62,12 @@ resource "aws_lambda_function" "terraform_siphon_func" {
   handler = "index.handler"
   runtime = "nodejs18.x"
   depends_on = [aws_iam_role_policy_attachment.attach_siphon_policy_to_role]
+  environment {
+    variables = {
+      REGION = var.REGION
+      TABLE_NAME = var.TABLE_NAME
+      BUCKET = var.BUCKET
+    }
+  }
 }
 
