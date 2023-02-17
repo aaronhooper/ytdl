@@ -6,8 +6,5 @@
     "@aws-sdk/client-dynamodb": "^3.264.0",
     "@aws-sdk/client-lambda": "^3.271.0",
     "nanoid": "^4.0.0"
-  },
-  "devDependencies": {
-    "dotenv": "^16.0.3"
   }
 }

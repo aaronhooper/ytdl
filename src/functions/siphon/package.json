@@ -2,9 +2,6 @@
   "name": "siphon",
   "private": true,
   "main": "index.mjs",
-  "devDependencies": {
-    "dotenv": "^16.0.3"
-  },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.271.0",
     "@aws-sdk/client-s3": "^3.271.0",
