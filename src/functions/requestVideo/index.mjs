@@ -6,7 +6,9 @@ import lambdaClient from './lib/lambdaClient.mjs'
 import { InvokeCommand } from '@aws-sdk/client-lambda'
 
 export const handler = async (event) => {
-  if (!event.url) {
+  const json = JSON.parse(event.body)
+
+  if (!json.url) {
     const response = {
       statusCode: 400,
       body: JSON.stringify({
@@ -17,7 +19,7 @@ export const handler = async (event) => {
     return response
   }
 
-  const url = event.url
+  const url = json.url
   const jobId = nanoid()
 
   if (!isValidUrl(url)) {

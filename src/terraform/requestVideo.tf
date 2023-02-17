@@ -73,3 +73,7 @@ resource "aws_lambda_function" "terraform_requestVideo_func" {
   }
 }
 
+resource "aws_lambda_function_url" "requestVideo_url" {
+  function_name      = aws_lambda_function.terraform_requestVideo_func.function_name
+  authorization_type = "NONE"
+}
