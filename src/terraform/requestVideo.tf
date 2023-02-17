@@ -36,8 +36,8 @@ resource "aws_iam_policy" "requestVideo_policy" {
           "dynamodb:PutItem"
         ]
         Resource = [
-          "arn:aws:dynamodb:*:*:*",
-          "arn:aws:lambda:*:*:*"
+          aws_dynamodb_table.streamJobs_table.arn,
+          aws_s3_bucket.savedVideos_bucket.arn
         ]
         Effect = "Allow"
       }

@@ -35,7 +35,7 @@ resource "aws_iam_policy" "siphon_policy" {
           "dynamodb:UpdateItem",
           "dynamodb:DeleteItem"
         ]
-        Resource = "arn:aws:dynamodb:*:*:*"
+        Resource = aws_dynamodb_table.streamJobs_table.arn
         Effect = "Allow"
       },
       {
@@ -44,7 +44,7 @@ resource "aws_iam_policy" "siphon_policy" {
           "s3:PutObjectAcl",
           "s3:GetObject"
         ]
-        Resource = "arn:aws:s3:::*/*"
+        Resource = aws_s3_bucket.savedVideos_bucket.arn
         Effect = "Allow"
       }
     ]
