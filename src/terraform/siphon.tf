@@ -26,7 +26,7 @@ resource "aws_iam_policy" "siphon_policy" {
           "logs:PutLogEvents"
         ]
         Resource = "arn:aws:logs:*:*:*"
-        Effect = "Allow"
+        Effect   = "Allow"
       },
       {
         Action = [
@@ -36,7 +36,7 @@ resource "aws_iam_policy" "siphon_policy" {
           "dynamodb:DeleteItem"
         ]
         Resource = aws_dynamodb_table.streamJobs_table.arn
-        Effect = "Allow"
+        Effect   = "Allow"
       },
       {
         Action = [
@@ -45,37 +45,37 @@ resource "aws_iam_policy" "siphon_policy" {
           "s3:GetObject"
         ]
         Resource = aws_s3_bucket.savedVideos_bucket.arn
-        Effect = "Allow"
+        Effect   = "Allow"
       }
     ]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "attach_siphon_policy_to_role" {
-  role = aws_iam_role.siphon_role.name
+  role       = aws_iam_role.siphon_role.name
   policy_arn = aws_iam_policy.siphon_policy.arn
 }
 
 data "archive_file" "zip_siphon" {
-  type = "zip"
-  source_dir = "${path.module}/../functions/siphon/"
+  type        = "zip"
+  source_dir  = "${path.module}/../functions/siphon/"
   output_path = "${path.module}/../functions/siphon.zip"
 }
 
 resource "aws_lambda_function" "terraform_siphon_func" {
-  filename = "${path.module}/../functions/siphon.zip"
+  filename      = "${path.module}/../functions/siphon.zip"
   function_name = "siphon"
-  role = aws_iam_role.siphon_role.arn
-  handler = "index.handler"
-  runtime = "nodejs18.x"
-  depends_on = [aws_iam_role_policy_attachment.attach_siphon_policy_to_role]
-  timeout = 300
+  role          = aws_iam_role.siphon_role.arn
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  depends_on    = [aws_iam_role_policy_attachment.attach_siphon_policy_to_role]
+  timeout       = 300
 
   environment {
     variables = {
-      REGION = var.region
+      REGION     = var.region
       TABLE_NAME = var.table_name
-      BUCKET = var.bucket
+      BUCKET     = var.bucket
     }
   }
 }

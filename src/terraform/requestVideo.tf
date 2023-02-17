@@ -26,7 +26,7 @@ resource "aws_iam_policy" "requestVideo_policy" {
           "logs:PutLogEvents"
         ]
         Resource = "arn:aws:logs:*:*:*"
-        Effect = "Allow"
+        Effect   = "Allow"
       },
       {
         Action = [
@@ -46,27 +46,27 @@ resource "aws_iam_policy" "requestVideo_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_requestVideo_policy_to_role" {
-  role = aws_iam_role.requestVideo_role.name
+  role       = aws_iam_role.requestVideo_role.name
   policy_arn = aws_iam_policy.requestVideo_policy.arn
 }
 
 data "archive_file" "zip_requestVideo" {
-  type = "zip"
-  source_dir = "${path.module}/../functions/requestVideo/"
+  type        = "zip"
+  source_dir  = "${path.module}/../functions/requestVideo/"
   output_path = "${path.module}/../functions/requestVideo.zip"
 }
 
 resource "aws_lambda_function" "terraform_requestVideo_func" {
-  filename = "${path.module}/../functions/requestVideo.zip"
+  filename      = "${path.module}/../functions/requestVideo.zip"
   function_name = "requestVideo"
-  role = aws_iam_role.requestVideo_role.arn
-  handler = "index.handler"
-  runtime = "nodejs18.x"
-  depends_on = [aws_iam_role_policy_attachment.attach_requestVideo_policy_to_role]
+  role          = aws_iam_role.requestVideo_role.arn
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  depends_on    = [aws_iam_role_policy_attachment.attach_requestVideo_policy_to_role]
   environment {
     variables = {
-      REGION = var.region
-      TABLE_NAME = var.table_name
+      REGION       = var.region
+      TABLE_NAME   = var.table_name
       FUNCTION_ARN = aws_lambda_function.terraform_siphon_func.function_name
     }
   }
