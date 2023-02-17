@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "savedVideos_bucket" {
-  bucket = var.BUCKET
+  bucket = var.bucket
 }
 
 resource "aws_s3_bucket_acl" "savedVideos_acl" {

@@ -1,6 +1,6 @@
-variable "REGION" {}
-variable "BUCKET" {}
-variable "TABLE_NAME" {}
+variable "region" {}
+variable "bucket" {}
+variable "table_name" {}
 
 terraform {
   required_providers {
@@ -12,5 +12,5 @@ terraform {
 }
 
 provider "aws" {
-  region = var.REGION
+  region = var.region
 }

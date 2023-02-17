@@ -65,8 +65,8 @@ resource "aws_lambda_function" "terraform_requestVideo_func" {
   depends_on = [aws_iam_role_policy_attachment.attach_requestVideo_policy_to_role]
   environment {
     variables = {
-      REGION = var.REGION
-      TABLE_NAME = var.TABLE_NAME
+      REGION = var.region
+      TABLE_NAME = var.table_name
       FUNCTION_ARN = aws_lambda_function.terraform_siphon_func.function_name
     }
   }

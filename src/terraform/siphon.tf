@@ -73,9 +73,9 @@ resource "aws_lambda_function" "terraform_siphon_func" {
 
   environment {
     variables = {
-      REGION = var.REGION
-      TABLE_NAME = var.TABLE_NAME
-      BUCKET = var.BUCKET
+      REGION = var.region
+      TABLE_NAME = var.table_name
+      BUCKET = var.bucket
     }
   }
 }
