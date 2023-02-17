@@ -44,7 +44,7 @@ resource "aws_iam_policy" "siphon_policy" {
           "s3:PutObjectAcl",
           "s3:GetObject"
         ]
-        Resource = aws_s3_bucket.savedVideos_bucket.arn
+        Resource = "${aws_s3_bucket.savedVideos_bucket.arn}/*"
         Effect   = "Allow"
       }
     ]
