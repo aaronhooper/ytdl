@@ -29,17 +29,18 @@ resource "aws_iam_policy" "requestVideo_policy" {
         Effect   = "Allow"
       },
       {
+        Action   = "dynamodb:PutItem"
+        Resource = aws_dynamodb_table.streamJobs_table.arn
+        Effect   = "Allow"
+      },
+      {
         Action = [
           "lambda:InvokeFunctionUrl",
           "lambda:InvokeFunction",
-          "lambda:InvokeAsync",
-          "dynamodb:PutItem"
+          "lambda:InvokeAsync"
         ]
-        Resource = [
-          aws_dynamodb_table.streamJobs_table.arn,
-          aws_s3_bucket.savedVideos_bucket.arn
-        ]
-        Effect = "Allow"
+        Resource = aws_lambda_function.terraform_siphon_func.arn
+        Effect   = "Allow"
       }
     ]
   })
