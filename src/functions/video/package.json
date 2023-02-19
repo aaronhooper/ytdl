@@ -1,5 +1,5 @@
 {
-  "name": "requestvideo",
+  "name": "video",
   "main": "index.mjs",
   "private": true,
   "dependencies": {
