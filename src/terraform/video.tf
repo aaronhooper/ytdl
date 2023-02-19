@@ -29,7 +29,10 @@ resource "aws_iam_policy" "video_policy" {
         Effect   = "Allow"
       },
       {
-        Action   = "dynamodb:PutItem"
+        Action   = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem"
+        ]
         Resource = aws_dynamodb_table.streamJobs_table.arn
         Effect   = "Allow"
       },
