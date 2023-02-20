@@ -1,11 +1,65 @@
 import { nanoid } from 'nanoid'
-import { isValidUrl } from './lib/util.mjs'
-import ddbClient from './lib/dynamoDbClient.mjs'
-import { PutItemCommand } from '@aws-sdk/client-dynamodb'
-import lambdaClient from './lib/lambdaClient.mjs'
+import { isValidUrl } from './util.mjs'
+import ddbClient from './dynamoDbClient.mjs'
+import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb'
+import lambdaClient from './lambdaClient.mjs'
 import { InvokeCommand } from '@aws-sdk/client-lambda'
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
-export const handler = async (event) => {
+export const getVideo = async (event) => {
+  if (!event.queryStringParameters.jobId) {
+    const response = {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Request must contain a jobId parameter'
+      })
+    }
+
+    return response
+  }
+
+  const jobId = event.queryStringParameters.jobId
+
+  try {
+    const { Item } = await ddbClient.send(new GetItemCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: marshall({ jobId })
+    }))
+
+    if (typeof Item === 'undefined') {
+      const response = {
+        statusCode: 404,
+        body: JSON.stringify({
+          message: 'No job found with given id'
+        })
+      }
+
+      return response
+    }
+
+    const data = unmarshall(Item)
+
+    const response = {
+      statusCode: 200,
+      body: JSON.stringify(data)
+    }
+
+    return response
+  } catch (err) {
+    console.error(err)
+
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Unable to get info from database'
+      })
+    }
+
+    return response
+  }
+}
+
+export const postVideo = async (event) => {
   const json = JSON.parse(event.body)
 
   if (!json.url) {
