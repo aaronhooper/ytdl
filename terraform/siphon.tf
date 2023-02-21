@@ -59,11 +59,11 @@ resource "aws_iam_role_policy_attachment" "attach_siphon_policy_to_role" {
 data "archive_file" "zip_siphon" {
   type        = "zip"
   source_dir  = "${path.module}/../functions/siphon/"
-  output_path = "${path.module}/../functions/siphon.zip"
+  output_path = "${path.module}/../dist/siphon.zip"
 }
 
 resource "aws_lambda_function" "terraform_siphon_func" {
-  filename      = "${path.module}/../functions/siphon.zip"
+  filename      = "${path.module}/../dist/siphon.zip"
   function_name = "siphon"
   role          = aws_iam_role.siphon_role.arn
   handler       = "index.handler"
