@@ -4,8 +4,14 @@ import Downloader from './Downloader.jsx'
 function App () {
   return (
     <div className='App'>
-      <Navbar />
-      <Downloader />
+      <header>
+        <Navbar />
+      </header>
+      <main>
+        <section>
+          <Downloader />
+        </section>
+      </main>
     </div>
   )
 }
