@@ -6,6 +6,8 @@ export default function DownloaderStatus (props) {
       return <>Siphoning video data <ProgressEllipsis /></>
     } else if (status === 'COMPLETED') {
       return <>Done! <a>Click here</a> to download your video.</>
+    } else if (status === 'INVALID_URL') {
+      return <>Please enter a valid URL.</>
     } else {
       return ''
     }
