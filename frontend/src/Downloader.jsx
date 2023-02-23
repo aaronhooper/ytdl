@@ -34,7 +34,7 @@ export default function Downloader () {
   }
 
   return (
-    <div class='container'>
+    <div className='container'>
       <input type='url' onChange={handleChange} value={url} ref={inputRef} />
       <button onClick={handleClick} ref={buttonRef}>Download</button>
       <DownloaderStatus status={status} />
