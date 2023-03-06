@@ -79,4 +79,9 @@ resource "aws_lambda_function" "terraform_video_func" {
 resource "aws_lambda_function_url" "video_url" {
   function_name      = aws_lambda_function.terraform_video_func.function_name
   authorization_type = "NONE"
+
+  cors {
+    allow_origins = ["*"]
+    allow_methods = ["GET", "POST"]
+  }
 }
