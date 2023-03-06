@@ -1,10 +1,13 @@
 import { useRef, useState } from 'react'
 import DownloaderStatus from './DownloaderStatus'
 import validator from 'validator'
+import { postVideo, backoffUntilComplete } from './lib/backend.js'
+import LinkShower from './LinkShower'
 
 export default function Downloader () {
   const [url, setUrl] = useState('https://youtu.be/jNQXAC9IVRw')
   const [status, setStatus] = useState('')
+  const [downloadLink, setDownloadLink] = useState('')
   const inputRef = useRef(null)
   const buttonRef = useRef(null)
 
@@ -32,13 +35,9 @@ export default function Downloader () {
     e.target.classList.add('outline')
     setStatus('IN_PROGRESS')
 
-    // create job
-    fetch(import.meta.env.VITE_VIDEO_LAMBDA_ENDPOINT, {
-      method: 'POST',
-      body: JSON.stringify({ url })
-    })
-
-    // ping server for job status, exponentially increasing wait time
+    postVideo(url)
+      .then(jobId => backoffUntilComplete(1000, jobId))
+      .then(downloadLink => setDownloadLink(downloadLink))
   }
 
   return (
@@ -46,6 +45,7 @@ export default function Downloader () {
       <input type='url' onChange={handleChange} value={url} ref={inputRef} />
       <button onClick={handleClick} ref={buttonRef}>Download</button>
       <DownloaderStatus status={status} />
+      <LinkShower downloadLink={downloadLink} />
     </div>
   )
 }
