@@ -31,6 +31,14 @@ export default function Downloader () {
     e.target.setAttribute('aria-busy', 'true')
     e.target.classList.add('outline')
     setStatus('IN_PROGRESS')
+
+    // create job
+    fetch(import.meta.env.VITE_VIDEO_LAMBDA_ENDPOINT, {
+      method: 'POST',
+      body: JSON.stringify({ url })
+    })
+
+    // ping server for job status, exponentially increasing wait time
   }
 
   return (
