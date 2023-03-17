@@ -42,6 +42,10 @@ export default function Downloader () {
         console.error(err)
         setStatus('FAILED')
       })
+      .finally(() => {
+        e.target.setAttribute('aria-busy', 'false')
+        e.target.classList.remove('outline')
+      })
   }
 
   return (
