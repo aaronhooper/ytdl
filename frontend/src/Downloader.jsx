@@ -15,6 +15,9 @@ export default function Downloader () {
   }
 
   function handleChange (e) {
+    // We capture the textbox value before setting with setUrl,
+    // because we can't be sure that the React state has been updated
+    // in time to be used reliably later in the function.
     const nextUrl = e.target.value
     setUrl(nextUrl)
 
