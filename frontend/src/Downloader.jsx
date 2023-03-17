@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import DownloaderStatus from './DownloaderStatus'
 import validator from 'validator'
 import { postVideo, backoffUntilComplete } from './lib/backend.js'
-import LinkShower from './LinkShower'
 
 export default function Downloader () {
   const [url, setUrl] = useState('https://youtu.be/jNQXAC9IVRw')
@@ -38,14 +37,18 @@ export default function Downloader () {
     postVideo(url)
       .then(jobId => backoffUntilComplete(1000, jobId))
       .then(downloadLink => setDownloadLink(downloadLink))
+      .then(() => setStatus('COMPLETED'))
+      .catch(err => {
+        console.error(err)
+        setStatus('FAILED')
+      })
   }
 
   return (
     <div className='container'>
       <input type='url' onChange={handleChange} value={url} ref={inputRef} />
       <button onClick={handleClick} ref={buttonRef}>Download</button>
-      <DownloaderStatus status={status} />
-      <LinkShower downloadLink={downloadLink} />
+      <DownloaderStatus status={status} downloadLink={downloadLink} />
     </div>
   )
 }
