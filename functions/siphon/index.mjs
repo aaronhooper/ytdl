@@ -6,6 +6,7 @@ import s3Client from './lib/s3Client.mjs'
 import ddbClient from './lib/dynamoDbClient.mjs'
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { createResponseObject as response } from './lib/util.mjs'
 
 export const handler = async (event) => {
   const url = event.url
@@ -28,15 +29,7 @@ export const handler = async (event) => {
     await upload.done()
   } catch (err) {
     console.error(err)
-
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Could not stream video data to bucket'
-      })
-    }
-
-    return response
+    return response({ message: 'Could not stream video data to bucket' }, 500)
   }
 
   try {
@@ -50,15 +43,7 @@ export const handler = async (event) => {
     })
   } catch (err) {
     console.error(err)
-
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Could not create presigned url'
-      })
-    }
-
-    return response
+    return response({ message: 'Could not create presigned url' }, 500)
   }
 
   try {
@@ -77,23 +62,8 @@ export const handler = async (event) => {
     }))
   } catch (err) {
     console.error(err)
-
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Could not update item in database'
-      })
-    }
-
-    return response
+    return response({ message: 'Could not update item in database' }, 500)
   }
 
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Done!'
-    })
-  }
-
-  return response
+  return response({ message: 'Done!' })
 }

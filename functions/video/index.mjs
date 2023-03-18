@@ -1,4 +1,5 @@
 import { getVideo, postVideo } from './lib/methods.mjs'
+import { createResponseObject as response } from './lib/util.mjs'
 
 export const handler = async (event) => {
   const method = event.requestContext.http.method
@@ -9,12 +10,5 @@ export const handler = async (event) => {
     return postVideo(event)
   }
 
-  const response = {
-    statusCode: 400,
-    body: JSON.stringify({
-      message: `Unsupported method '${event.http.method}'`
-    })
-  }
-
-  return response
+  return response({ message: `Unsupported method '${event.http.method}'` }, 400)
 }

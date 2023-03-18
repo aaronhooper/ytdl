@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { isValidUrl } from './util.mjs'
+import { isValidUrl, createResponseObject as response } from './util.mjs'
 import ddbClient from './dynamoDbClient.mjs'
 import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb'
 import lambdaClient from './lambdaClient.mjs'
@@ -7,18 +7,11 @@ import { InvokeCommand } from '@aws-sdk/client-lambda'
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 
 export const getVideo = async (event) => {
-  if (!event.queryStringParameters.jobId) {
-    const response = {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: 'Request must contain a jobId parameter'
-      })
-    }
+  const jobId = event.queryStringParameters?.jobId
 
-    return response
+  if (!jobId) {
+    return response({ message: 'Request must contain a jobId parameter' }, 400)
   }
-
-  const jobId = event.queryStringParameters.jobId
 
   try {
     const { Item } = await ddbClient.send(new GetItemCommand({
@@ -26,36 +19,14 @@ export const getVideo = async (event) => {
       Key: marshall({ jobId })
     }))
 
-    if (typeof Item === 'undefined') {
-      const response = {
-        statusCode: 404,
-        body: JSON.stringify({
-          message: 'No job found with given id'
-        })
-      }
-
-      return response
+    if (!Item) {
+      return response({ message: 'No job found with given id' }, 404)
     }
 
-    const data = unmarshall(Item)
-
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify(data)
-    }
-
-    return response
+    return response(unmarshall(Item))
   } catch (err) {
     console.error(err)
-
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Unable to get info from database'
-      })
-    }
-
-    return response
+    return response({ message: 'Unable to get info from database' }, 500)
   }
 }
 
@@ -63,28 +34,14 @@ export const postVideo = async (event) => {
   const json = JSON.parse(event.body)
 
   if (!json.url) {
-    const response = {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: 'Request must contain a url property'
-      })
-    }
-
-    return response
+    return response({ message: 'Request must contain a url property' }, 400)
   }
 
   const url = json.url
   const jobId = nanoid()
 
   if (!isValidUrl(url)) {
-    const response = {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: 'Url is not valid'
-      })
-    }
-
-    return response
+    return response({ message: 'Url is not valid' }, 400)
   }
 
   try {
@@ -98,15 +55,7 @@ export const postVideo = async (event) => {
     }))
   } catch (err) {
     console.error(err)
-
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Could not create item in database'
-      })
-    }
-
-    return response
+    return response({ message: 'Could not create item in database' }, 500)
   }
 
   try {
@@ -117,24 +66,8 @@ export const postVideo = async (event) => {
     }))
   } catch (err) {
     console.error(err)
-
-    const response = {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Could not invoke siphon'
-      })
-    }
-
-    return response
+    return response({ message: 'Could not invoke siphon' }, 500)
   }
 
-  const response = {
-    statusCode: 202,
-    body: JSON.stringify({
-      message: 'Job added to queue',
-      jobId
-    })
-  }
-
-  return response
+  return response({ message: 'Job added to queue', jobId }, 202)
 }
