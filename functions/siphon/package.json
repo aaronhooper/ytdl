@@ -1,6 +1,7 @@
 {
   "name": "siphon",
   "private": true,
+  "version": "2.0.0",
   "main": "index.mjs",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.271.0",

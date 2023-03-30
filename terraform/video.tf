@@ -1,5 +1,5 @@
-resource "aws_iam_role" "requestVideo_role" {
-  name = "requestVideo_role"
+resource "aws_iam_role" "video_role" {
+  name = "video_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -14,8 +14,8 @@ resource "aws_iam_role" "requestVideo_role" {
   })
 }
 
-resource "aws_iam_policy" "requestVideo_policy" {
-  name = "requestVideo_policy"
+resource "aws_iam_policy" "video_policy" {
+  name = "video_policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -29,7 +29,10 @@ resource "aws_iam_policy" "requestVideo_policy" {
         Effect   = "Allow"
       },
       {
-        Action   = "dynamodb:PutItem"
+        Action   = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem"
+        ]
         Resource = aws_dynamodb_table.streamJobs_table.arn
         Effect   = "Allow"
       },
@@ -46,24 +49,24 @@ resource "aws_iam_policy" "requestVideo_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "attach_requestVideo_policy_to_role" {
-  role       = aws_iam_role.requestVideo_role.name
-  policy_arn = aws_iam_policy.requestVideo_policy.arn
+resource "aws_iam_role_policy_attachment" "attach_video_policy_to_role" {
+  role       = aws_iam_role.video_role.name
+  policy_arn = aws_iam_policy.video_policy.arn
 }
 
-data "archive_file" "zip_requestVideo" {
+data "archive_file" "zip_video" {
   type        = "zip"
-  source_dir  = "${path.module}/../functions/requestVideo/"
-  output_path = "${path.module}/../functions/requestVideo.zip"
+  source_dir  = "${path.module}/../functions/video/"
+  output_path = "${path.module}/../dist/video.zip"
 }
 
-resource "aws_lambda_function" "terraform_requestVideo_func" {
-  filename      = "${path.module}/../functions/requestVideo.zip"
-  function_name = "requestVideo"
-  role          = aws_iam_role.requestVideo_role.arn
+resource "aws_lambda_function" "terraform_video_func" {
+  filename      = "${path.module}/../dist/video.zip"
+  function_name = "video"
+  role          = aws_iam_role.video_role.arn
   handler       = "index.handler"
   runtime       = "nodejs18.x"
-  depends_on    = [aws_iam_role_policy_attachment.attach_requestVideo_policy_to_role]
+  depends_on    = [aws_iam_role_policy_attachment.attach_video_policy_to_role]
   environment {
     variables = {
       REGION       = var.region
@@ -73,7 +76,12 @@ resource "aws_lambda_function" "terraform_requestVideo_func" {
   }
 }
 
-resource "aws_lambda_function_url" "requestVideo_url" {
-  function_name      = aws_lambda_function.terraform_requestVideo_func.function_name
+resource "aws_lambda_function_url" "video_url" {
+  function_name      = aws_lambda_function.terraform_video_func.function_name
   authorization_type = "NONE"
+
+  cors {
+    allow_origins = ["*"]
+    allow_methods = ["GET", "POST"]
+  }
 }
